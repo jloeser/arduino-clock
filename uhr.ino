@@ -160,14 +160,14 @@ void loop(){
 		if (justSwitched == false) {
 			switch (mode) {
 				case Mode::set_hour:
-					sprintf(newTime, "%02d", ++newHour);
 					if (newHour == 23)
 						newHour = -1;
+					sprintf(newTime, "%02d", ++newHour);
 					break;
 				case Mode::set_minute:
-					sprintf(newTime, "%02d", ++newMinute);
 					if (newMinute == 59)
 						newMinute = -1;
+					sprintf(newTime, "%02d", ++newMinute);
 					break;
 				case Mode::set_brightness:
 					brightness++;
@@ -188,7 +188,6 @@ void loop(){
 	}
 
 	if (mode != Mode::normal && --nextCounter == 0) {
-
 		switch (mode) {
 			case Mode::set_hour:
 				rtc.adjust(DateTime(now.year(), now.month(), now.day(), newHour, now.minute(), now.second()));

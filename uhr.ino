@@ -14,6 +14,7 @@ enum Mode {
 };
 
 #define NEXT 20
+#define NIGHTBREAK 50
 #define RSHIFT 3
 
 static const char *mode_str[] = {'n','h','m'};
@@ -39,6 +40,8 @@ bool justSwitched = false;
 bool toggle = true;
 int newBrightness = 0;
 int brightness = 1;
+bool night = false;
+int nightCounter = 0;
 
 char newTime[2];
 String newTime_str = "00";
@@ -141,6 +144,14 @@ void loop(){
 
 	if(toggle)
 		matrix.drawChar(10+RSHIFT,0,':',1,1,1);
+
+	if (night && mode == Mode::normal && nightCounter == 0)
+		matrix.fillScreen(LOW);
+
+	if (night) {
+		matrix.drawPixel(0, 0, 1);
+	}
+
 	matrix.write();
 
 	if(i == 5)
@@ -171,6 +182,11 @@ void loop(){
 					break;
 				case Mode::set_brightness:
 					brightness++;
+					if (brightness < 16)
+						night = false;
+					else
+						night = true;
+
 					if (brightness > 15)
 						brightness = 0;
 					matrix.setIntensity(brightness);
@@ -186,6 +202,13 @@ void loop(){
 		newHour = now.hour();
 		sprintf(newTime, "%02d", newHour);
 	}
+
+	if (mode == Mode::normal && night && pressBtnDuration != 0) {
+		nightCounter = NIGHTBREAK;
+	}
+
+	if (nightCounter > 0)
+		nightCounter--;
 
 	if (mode != Mode::normal && --nextCounter == 0) {
 		switch (mode) {
@@ -204,7 +227,7 @@ void loop(){
 			mode = Mode::normal;
 	}
 
-Serial.println(nextCounter);
+	Serial.println(nightCounter);
 
 	if(i % 10 == 0)
 		i=0;

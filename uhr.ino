@@ -102,12 +102,6 @@ void loop(){
 	matrix.fillScreen(LOW);
 
 	switch (mode) {
-		case Mode::normal:
-			matrix.drawChar( 0+RSHIFT,0,a[0],1,1,1);
-			matrix.drawChar( 6+RSHIFT,0,a[1],1,1,1);
-			matrix.drawChar(14+RSHIFT,0,a[2],1,1,1);
-			matrix.drawChar(20+RSHIFT,0,a[3],1,1,1);
-			break;
 		case Mode::set_hour:
 			matrix.drawChar( 0+RSHIFT,0,newTime_str[0],1,1,1);
 			matrix.drawChar( 6+RSHIFT,0,newTime_str[1],1,1,1);
@@ -132,6 +126,12 @@ void loop(){
 			matrix.drawPixel(29,7,1);
 			matrix.drawPixel(30,7,1);
 			matrix.drawPixel(31,7,1);
+		default:
+			matrix.drawChar( 0+RSHIFT,0,a[0],1,1,1);
+			matrix.drawChar( 6+RSHIFT,0,a[1],1,1,1);
+			matrix.drawChar(14+RSHIFT,0,a[2],1,1,1);
+			matrix.drawChar(20+RSHIFT,0,a[3],1,1,1);
+			break;
 	}
 
 	if (second <= 30)

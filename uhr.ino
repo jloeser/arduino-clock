@@ -44,7 +44,7 @@ char newTime[2];
 String newTime_str = "00";
 
 const int pinCS = 10;
-const int numberOfHorizontalDisplays = 8;
+const int numberOfHorizontalDisplays = 4;
 const int numberOfVerticalDisplays = 1;
 Max72xxPanel matrix = Max72xxPanel(pinCS, numberOfHorizontalDisplays, numberOfVerticalDisplays);
 const int wait = 50; // Velocidad a la que realiza el scroll
@@ -52,40 +52,28 @@ const int spacer = 1;
 const int width = 5 + spacer; // Ancho de la fuente a 5 pixeles
 
 void setup(){
-   Serial.begin(9600);
-   matrix.setIntensity ( brightness ) ;  // Adjust the brightness between 0 and 15
-   matrix.setPosition ( 0 ,  0 ,  0 ) ;  // The first display is at <0, 0>
-   matrix.setPosition ( 1 ,  1 ,  0 ) ;  // The second display is at <1, 0>
-   matrix.setPosition ( 2 ,  2 ,  0 ) ;  // The third display is in <2, 0>
-   matrix.setPosition ( 3 ,  3 ,  0 ) ;  // The fourth display is at <3, 0>
-   matrix.setPosition ( 4 ,  4 ,  0 ) ;  // The fifth display is at <4, 0>
-   matrix.setPosition ( 5 ,  5 ,  0 ) ;  // The sixth display is at <5, 0>
-   matrix.setPosition ( 6 ,  6 ,  0 ) ;  // The seventh display is at <6, 0>
-   matrix.setPosition ( 7 ,  7 ,  0 ) ;  // The eighth display is in <7, 0>
-   matrix.setPosition ( 8 ,  8 ,  0 ) ;  // The ninth display is at <8, 0>
-   matrix.setRotation ( 0 ,  1 ) ;		// Display position
-   matrix.setRotation ( 1 ,  1 ) ;		// Display position
-   matrix.setRotation ( 2 ,  1 ) ;		// Display position
-   matrix.setRotation ( 3 ,  1 ) ;		// Display position
-   matrix.setRotation ( 4 ,  1 ) ;		// Display position
-   matrix.setRotation ( 5 ,  1 ) ;		// Display position
-   matrix.setRotation ( 6 ,  1 ) ;		// Display position
-   matrix.setRotation ( 7 ,  1 ) ;		// Display position
-   matrix.setRotation ( 8 ,  1 ) ;		// Display position
+	Serial.begin(9600);
+	matrix.setIntensity(brightness);  // Adjust the brightness between 0 and 15
+	matrix.setPosition(0, 0, 0);  // The first display is at <0, 0>
+	matrix.setPosition(1, 1, 0);  // The second display is at <1, 0>
+	matrix.setPosition(2, 2, 0);  // The third display is in <2, 0>
+	matrix.setPosition(3, 3, 0);  // The fourth display is at <3, 0>
+	matrix.setRotation(0, 1);		// Display position
+	matrix.setRotation(1, 1);		// Display position
+	matrix.setRotation(2, 1);		// Display position
+	matrix.setRotation(3, 1);		// Display position
 
-   if (!rtc.begin()) {
-  Serial.println("Couldn't find RTC");
-  Serial.flush();
-  abort();
-}
+	if (!rtc.begin()) {
+		Serial.println("Couldn't find RTC");
+		Serial.flush();
+		abort();
+	}
 	if (rtc.lostPower()) {
 		Serial.println("RTC lost power, let's set the time!");
-
 		rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 	}
 	pinMode(pinLED, OUTPUT);
 	pinMode(pinBTN, INPUT_PULLUP);
-
 }
 
 

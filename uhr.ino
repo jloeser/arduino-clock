@@ -1,6 +1,7 @@
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Max72xxPanel.h>
+#include <EEPROM.h>
 
 #include "RTClib.h"
 
@@ -34,6 +35,8 @@ char* nightMode_str[] = {"off", "on", "auto"};
 const int pinLED = 14;
 const int pinBTN = 15;
 
+const int memAddr = 0x0;
+
 int i = 0;
 int mode = Mode::normal;
 int pressBtnDuration = 0;
@@ -44,6 +47,7 @@ bool justSwitched = false;
 bool toggle = true;
 int newBrightness = 0;
 int brightness = 1;
+int oldBrightness = brightness;
 int nightMode = NightMode::off;
 int nightCounter = 0;
 
@@ -60,6 +64,11 @@ const int width = 5 + spacer; // Ancho de la fuente a 5 pixeles
 
 void setup(){
 	Serial.begin(9600);
+
+	brightness = EEPROM.read(memAddr);
+	Serial.print("Read brightness from EEPROM: ");
+	Serial.println(brightness, DEC);
+
 	matrix.setIntensity(brightness);  // Adjust the brightness between 0 and 15
 	matrix.setPosition(0, 0, 0);  // The first display is at <0, 0>
 	matrix.setPosition(1, 1, 0);  // The second display is at <1, 0>
@@ -220,6 +229,7 @@ void loop(){
 		mode++;
 		newHour = now.hour();
 		sprintf(newTime, "%02d", newHour);
+		oldBrightness = brightness;
 	}
 
 	if (mode == Mode::normal && nightMode >= NightMode::on && pressBtnDuration != 0) {
@@ -238,6 +248,13 @@ void loop(){
 				break;
 			case Mode::set_minute:
 				rtc.adjust(DateTime(now.year(), now.month(), now.day(), now.hour(), newMinute, now.second()));
+				break;
+			case Mode::set_brightness:
+				if (brightness != oldBrightness) {
+					EEPROM.write(memAddr, brightness);
+					Serial.print("Saved new brightness to EEPROM: ");
+					Serial.println(brightness, DEC);
+				}
 				break;
 		}
 		mode++;

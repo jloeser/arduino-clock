@@ -15,8 +15,9 @@ enum Mode {
 };
 
 enum NightMode {
-	on,
 	off,
+	on,
+	automatic,
 };
 
 #define NEXT 20
@@ -26,7 +27,7 @@ enum NightMode {
 static const char *mode_str[] = {'n','h','m'};
 
 char* daysOfTheWeek[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-char* nightMode_str[] = {"on", "off"};
+char* nightMode_str[] = {"off", "on", "auto"};
 
 //Vcc - Vcc
 //Gnd - Gnd
@@ -161,12 +162,17 @@ void loop(){
 	if(toggle && mode < Mode::set_brightness)
 		matrix.drawChar(10+RSHIFT,0,':',1,1,1);
 
-	if (nightMode == NightMode::on && mode == Mode::normal && nightCounter == 0)
-		matrix.fillScreen(LOW);
-
-	if (nightMode == NightMode::on) {
-		matrix.drawPixel(0, 0, 1);
+	if (mode == Mode::normal && nightCounter == 0) {
+		if (nightMode == NightMode::on)
+			matrix.fillScreen(LOW);
+		if (nightMode == NightMode::automatic && (now.hour() > 21 || now.hour() < 6))
+			matrix.fillScreen(LOW);
 	}
+
+	if (nightMode >= NightMode::on)
+		matrix.drawPixel(0, 0, 1);
+	if (nightMode == NightMode::automatic)
+		matrix.drawPixel(0, 1, 1);
 
 	matrix.write();
 
@@ -204,7 +210,7 @@ void loop(){
 					break;
 				case Mode::set_nightmode:
 					nightMode++;
-					if (nightMode > 1)
+					if (nightMode > 2)
 						nightMode = 0;
 					break;
 			}
@@ -219,7 +225,7 @@ void loop(){
 		sprintf(newTime, "%02d", newHour);
 	}
 
-	if (mode == Mode::normal && nightMode == NightMode::on && pressBtnDuration != 0) {
+	if (mode == Mode::normal && nightMode >= NightMode::on && pressBtnDuration != 0) {
 		nightCounter = NIGHTBREAK;
 	}
 

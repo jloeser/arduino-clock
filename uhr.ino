@@ -11,6 +11,12 @@ enum Mode {
 	set_hour,
 	set_minute,
 	set_brightness,
+	set_nightmode,
+};
+
+enum NightMode {
+	on,
+	off,
 };
 
 #define NEXT 20
@@ -20,7 +26,7 @@ enum Mode {
 static const char *mode_str[] = {'n','h','m'};
 
 char* daysOfTheWeek[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-
+char* nightMode_str[] = {"on", "off"};
 
 //Vcc - Vcc
 //Gnd - Gnd
@@ -40,7 +46,7 @@ bool justSwitched = false;
 bool toggle = true;
 int newBrightness = 0;
 int brightness = 1;
-bool night = false;
+int nightMode = NightMode::off;
 int nightCounter = 0;
 
 char newTime[2];
@@ -129,6 +135,13 @@ void loop(){
 			matrix.drawPixel(29,7,1);
 			matrix.drawPixel(30,7,1);
 			matrix.drawPixel(31,7,1);
+			break;
+		case Mode::set_nightmode:
+			matrix.drawChar( 0+RSHIFT,0, 'n', 1, 1, 1);
+			matrix.drawChar( 5+RSHIFT,0, ':', 1, 1, 1);
+			for (int i=0; i<strlen(nightMode_str[nightMode]); i++)
+				matrix.drawChar(12 + i * 5,0,nightMode_str[nightMode][i], 1, 1, 1);
+			break;
 		default:
 			matrix.drawChar( 0+RSHIFT,0,a[0],1,1,1);
 			matrix.drawChar( 6+RSHIFT,0,a[1],1,1,1);
@@ -142,13 +155,13 @@ void loop(){
 	else
 		matrix.drawPixel(30 + (30-second),7,1);
 
-	if(toggle)
+	if(toggle && mode != Mode::set_nightmode)
 		matrix.drawChar(10+RSHIFT,0,':',1,1,1);
 
-	if (night && mode == Mode::normal && nightCounter == 0)
+	if (nightMode == NightMode::on && mode == Mode::normal && nightCounter == 0)
 		matrix.fillScreen(LOW);
 
-	if (night) {
+	if (nightMode == NightMode::on) {
 		matrix.drawPixel(0, 0, 1);
 	}
 
@@ -182,14 +195,14 @@ void loop(){
 					break;
 				case Mode::set_brightness:
 					brightness++;
-					if (brightness < 16)
-						night = false;
-					else
-						night = true;
-
 					if (brightness > 15)
 						brightness = 0;
 					matrix.setIntensity(brightness);
+					break;
+				case Mode::set_nightmode:
+					nightMode++;
+					if (nightMode > 1)
+						nightMode = 0;
 					break;
 			}
 		}
@@ -203,7 +216,7 @@ void loop(){
 		sprintf(newTime, "%02d", newHour);
 	}
 
-	if (mode == Mode::normal && night && pressBtnDuration != 0) {
+	if (mode == Mode::normal && nightMode == NightMode::on && pressBtnDuration != 0) {
 		nightCounter = NIGHTBREAK;
 	}
 
@@ -223,7 +236,7 @@ void loop(){
 		}
 		mode++;
 		nextCounter = NEXT;
-		if(mode > 3)
+		if(mode > 4)
 			mode = Mode::normal;
 	}
 

@@ -10,9 +10,11 @@ enum Mode {
 	normal,
 	set_hour,
 	set_minute,
+	set_brightness,
 };
 
-#define NEXT 20;
+#define NEXT 20
+#define RSHIFT 3
 
 static const char *mode_str[] = {'n','h','m'};
 
@@ -35,6 +37,8 @@ int newMinute = 0;
 int nextCounter = NEXT;
 bool justSwitched = false;
 bool toggle = true;
+int newBrightness = 0;
+int brightness = 1;
 
 char newTime[2];
 String newTime_str = "00";
@@ -49,25 +53,25 @@ const int width = 5 + spacer; // Ancho de la fuente a 5 pixeles
 
 void setup(){
    Serial.begin(9600);
-   matrix. setIntensity ( 0 ) ;  // Adjust the brightness between 0 and 15
-   matrix. setPosition ( 0 ,  0 ,  0 ) ;  // The first display is at <0, 0>
-   matrix. setPosition ( 1 ,  1 ,  0 ) ;  // The second display is at <1, 0>
-   matrix. setPosition ( 2 ,  2 ,  0 ) ;  // The third display is in <2, 0>
-   matrix. setPosition ( 3 ,  3 ,  0 ) ;  // The fourth display is at <3, 0>
-   matrix. setPosition ( 4 ,  4 ,  0 ) ;  // The fifth display is at <4, 0>
-   matrix. setPosition ( 5 ,  5 ,  0 ) ;  // The sixth display is at <5, 0>
-   matrix. setPosition ( 6 ,  6 ,  0 ) ;  // The seventh display is at <6, 0>
-   matrix. setPosition ( 7 ,  7 ,  0 ) ;  // The eighth display is in <7, 0>
-   matrix. setPosition ( 8 ,  8 ,  0 ) ;  // The ninth display is at <8, 0>
-   matrix. setRotation ( 0 ,  1 ) ;		// Display position
-   matrix. setRotation ( 1 ,  1 ) ;		// Display position
-   matrix. setRotation ( 2 ,  1 ) ;		// Display position
-   matrix. setRotation ( 3 ,  1 ) ;		// Display position
-   matrix. setRotation ( 4 ,  1 ) ;		// Display position
-   matrix. setRotation ( 5 ,  1 ) ;		// Display position
-   matrix. setRotation ( 6 ,  1 ) ;		// Display position
-   matrix. setRotation ( 7 ,  1 ) ;		// Display position
-   matrix. setRotation ( 8 ,  1 ) ;		// Display position
+   matrix.setIntensity ( brightness ) ;  // Adjust the brightness between 0 and 15
+   matrix.setPosition ( 0 ,  0 ,  0 ) ;  // The first display is at <0, 0>
+   matrix.setPosition ( 1 ,  1 ,  0 ) ;  // The second display is at <1, 0>
+   matrix.setPosition ( 2 ,  2 ,  0 ) ;  // The third display is in <2, 0>
+   matrix.setPosition ( 3 ,  3 ,  0 ) ;  // The fourth display is at <3, 0>
+   matrix.setPosition ( 4 ,  4 ,  0 ) ;  // The fifth display is at <4, 0>
+   matrix.setPosition ( 5 ,  5 ,  0 ) ;  // The sixth display is at <5, 0>
+   matrix.setPosition ( 6 ,  6 ,  0 ) ;  // The seventh display is at <6, 0>
+   matrix.setPosition ( 7 ,  7 ,  0 ) ;  // The eighth display is in <7, 0>
+   matrix.setPosition ( 8 ,  8 ,  0 ) ;  // The ninth display is at <8, 0>
+   matrix.setRotation ( 0 ,  1 ) ;		// Display position
+   matrix.setRotation ( 1 ,  1 ) ;		// Display position
+   matrix.setRotation ( 2 ,  1 ) ;		// Display position
+   matrix.setRotation ( 3 ,  1 ) ;		// Display position
+   matrix.setRotation ( 4 ,  1 ) ;		// Display position
+   matrix.setRotation ( 5 ,  1 ) ;		// Display position
+   matrix.setRotation ( 6 ,  1 ) ;		// Display position
+   matrix.setRotation ( 7 ,  1 ) ;		// Display position
+   matrix.setRotation ( 8 ,  1 ) ;		// Display position
 
    if (!rtc.begin()) {
   Serial.println("Couldn't find RTC");
@@ -111,27 +115,35 @@ void loop(){
 
 	switch (mode) {
 		case Mode::normal:
-			matrix.drawChar(0,0,a[0],1,1,1);
-			matrix.drawChar(6,0,a[1],1,1,1);
-			matrix.drawChar(14,0,a[2],1,1,1);
-			matrix.drawChar(20,0,a[3],1,1,1);
+			matrix.drawChar( 0+RSHIFT,0,a[0],1,1,1);
+			matrix.drawChar( 6+RSHIFT,0,a[1],1,1,1);
+			matrix.drawChar(14+RSHIFT,0,a[2],1,1,1);
+			matrix.drawChar(20+RSHIFT,0,a[3],1,1,1);
 			break;
 		case Mode::set_hour:
-			matrix.drawChar(0,0,newTime_str[0],1,1,1);
-			matrix.drawChar(6,0,newTime_str[1],1,1,1);
-			matrix.drawChar(14,0,a[2],1,1,1);
-			matrix.drawChar(20,0,a[3],1,1,1);
-			for (int i=0; i < 12; i++)
+			matrix.drawChar( 0+RSHIFT,0,newTime_str[0],1,1,1);
+			matrix.drawChar( 6+RSHIFT,0,newTime_str[1],1,1,1);
+			matrix.drawChar(14+RSHIFT,0,a[2],1,1,1);
+			matrix.drawChar(20+RSHIFT,0,a[3],1,1,1);
+			for (int i=0+RSHIFT; i < 12+RSHIFT; i++)
 				matrix.drawPixel(i,7,1);
 			break;
 		case Mode::set_minute:
-			matrix.drawChar(0,0,a[0],1,1,1);
-			matrix.drawChar(6,0,a[1],1,1,1);
-			matrix.drawChar(14,0,newTime_str[0],1,1,1);
-			matrix.drawChar(20,0,newTime_str[1],1,1,1);
-			for (int i=0; i < 12; i++)
+			matrix.drawChar( 0+RSHIFT,0,a[0],1,1,1);
+			matrix.drawChar( 6+RSHIFT,0,a[1],1,1,1);
+			matrix.drawChar(14+RSHIFT,0,newTime_str[0],1,1,1);
+			matrix.drawChar(20+RSHIFT,0,newTime_str[1],1,1,1);
+			for (int i=0+RSHIFT; i < 12+RSHIFT; i++)
 				matrix.drawPixel(i+14,7,1);
 			break;
+		case Mode::set_brightness:
+			matrix.drawChar( 0+RSHIFT,0,a[0],1,1,1);
+			matrix.drawChar( 6+RSHIFT,0,a[1],1,1,1);
+			matrix.drawChar(14+RSHIFT,0,a[2],1,1,1);
+			matrix.drawChar(20+RSHIFT,0,a[3],1,1,1);
+			matrix.drawPixel(29,7,1);
+			matrix.drawPixel(30,7,1);
+			matrix.drawPixel(31,7,1);
 	}
 
 	if (second <= 30)
@@ -140,7 +152,7 @@ void loop(){
 		matrix.drawPixel(30 + (30-second),7,1);
 
 	if(toggle)
-		matrix.drawChar(10,0,':',1,1,1);
+		matrix.drawChar(10+RSHIFT,0,':',1,1,1);
 	matrix.write();
 
 	if(i == 5)
@@ -169,6 +181,12 @@ void loop(){
 					if (newMinute == 59)
 						newMinute = -1;
 					break;
+				case Mode::set_brightness:
+					brightness++;
+					if (brightness > 15)
+						brightness = 0;
+					matrix.setIntensity(brightness);
+					break;
 			}
 		}
 	}
@@ -195,8 +213,8 @@ void loop(){
 		}
 		mode++;
 		nextCounter = NEXT;
-		if(mode > 2)
-			mode=Mode::normal;
+		if(mode > 3)
+			mode = Mode::normal;
 	}
 
 Serial.println(nextCounter);

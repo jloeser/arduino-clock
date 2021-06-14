@@ -128,13 +128,16 @@ void loop(){
 				matrix.drawPixel(i+14,7,1);
 			break;
 		case Mode::set_brightness:
-			matrix.drawChar( 0+RSHIFT,0,a[0],1,1,1);
-			matrix.drawChar( 6+RSHIFT,0,a[1],1,1,1);
-			matrix.drawChar(14+RSHIFT,0,a[2],1,1,1);
-			matrix.drawChar(20+RSHIFT,0,a[3],1,1,1);
-			matrix.drawPixel(29,7,1);
-			matrix.drawPixel(30,7,1);
-			matrix.drawPixel(31,7,1);
+			matrix.drawChar( 0+RSHIFT,0, 'b', 1, 1, 1);
+			matrix.drawChar( 5+RSHIFT,0, ':', 1, 1, 1);
+			matrix.drawPixel( 13, 5, 1);
+			matrix.drawPixel( 20, 5, 1);
+			matrix.drawPixel( 27, 5, 1);
+
+			for (int i=0; i < brightness; i++) {
+				matrix.drawPixel(13 + i,3,1);
+				matrix.drawPixel(13 + i,4,1);
+			}
 			break;
 		case Mode::set_nightmode:
 			matrix.drawChar( 0+RSHIFT,0, 'n', 1, 1, 1);
@@ -155,7 +158,7 @@ void loop(){
 	else
 		matrix.drawPixel(30 + (30-second),7,1);
 
-	if(toggle && mode != Mode::set_nightmode)
+	if(toggle && mode < Mode::set_brightness)
 		matrix.drawChar(10+RSHIFT,0,':',1,1,1);
 
 	if (nightMode == NightMode::on && mode == Mode::normal && nightCounter == 0)

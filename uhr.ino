@@ -24,9 +24,6 @@ enum NightMode {
 #define NIGHTBREAK 50
 #define RSHIFT 3
 
-static const char *mode_str[] = {'n','h','m'};
-
-char* daysOfTheWeek[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 char* nightMode_str[] = {"off", "on", "auto"};
 
 //Vcc - Vcc
@@ -248,8 +245,6 @@ void loop(){
 		if(mode > 4)
 			mode = Mode::normal;
 	}
-
-	Serial.println(nightCounter);
 
 	if(i % 10 == 0)
 		i=0;

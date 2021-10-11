@@ -62,6 +62,20 @@ const int wait = 50; // Velocidad a la que realiza el scroll
 const int spacer = 1;
 const int width = 5 + spacer; // Ancho de la fuente a 5 pixeles
 
+// https://forum.arduino.cc/t/implementation-of-an-eeprom-integer-read-write/37567
+void EEPROMWriteInt(int p_address, int p_value) {
+	byte lowByte = ((p_value >> 0) & 0xFF);
+	byte highByte = ((p_value >> 8) & 0xFF);
+	EEPROM.write(p_address, lowByte);
+	EEPROM.write(p_address + 1, highByte);
+}
+
+unsigned int EEPROMReadInt(int p_address) {
+	byte lowByte = EEPROM.read(p_address);
+	byte highByte = EEPROM.read(p_address + 1);
+	return ((lowByte << 0) & 0xFF) + ((highByte << 8) & 0xFF00);
+}
+
 void setup(){
 	Serial.begin(9600);
 
